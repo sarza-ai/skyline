@@ -953,192 +953,140 @@ footer{background:#2e3233;padding:60px 5% 28px;border-top:1px solid rgba(242,101
 </footer>
 
 
+
+
+
+
+
 <!-- ══ RETELL AI CHAT WIDGET ══ -->
 <style>
-  /* Chat bubble button */
-  #retell-chat-btn {
+  /* Hide Retell's own FAB — we use ours */
+  #retell-widget-fab,
+  retell-widget,
+  [class*="retell-fab"],
+  [class*="RetellFab"],
+  [id*="retell-fab"] {
+    display:none !important;
+    visibility:hidden !important;
+  }
+
+  /* Our branded button */
+  #ss-btn {
     position:fixed;bottom:28px;right:28px;z-index:9999;
-    width:64px;height:64px;border-radius:50%;
-    background:var(--or);border:none;cursor:pointer;
-    box-shadow:0 4px 24px rgba(242,101,34,0.55),0 2px 8px rgba(0,0,0,0.3);
+    width:68px;height:68px;border-radius:50%;
+    background:#F26522;border:none;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
-    transition:transform .2s,box-shadow .2s;
-    animation:pulse-btn 3s ease-in-out infinite;
+    box-shadow:0 4px 24px rgba(242,101,34,0.55),0 2px 8px rgba(0,0,0,0.35);
+    transition:transform .2s;
+    animation:ss-pulse 3s ease-in-out infinite;
   }
-  #retell-chat-btn:hover {
-    transform:scale(1.1);
-    box-shadow:0 6px 32px rgba(242,101,34,0.7),0 2px 12px rgba(0,0,0,0.35);
+  #ss-btn:hover { transform:scale(1.1); }
+  @keyframes ss-pulse {
+    0%,100% { box-shadow:0 4px 24px rgba(242,101,34,0.55),0 2px 8px rgba(0,0,0,0.35) }
+    50%      { box-shadow:0 4px 40px rgba(242,101,34,0.9),0 2px 8px rgba(0,0,0,0.35) }
   }
-  #retell-chat-btn svg { pointer-events:none; }
-  @keyframes pulse-btn {
-    0%,100%{box-shadow:0 4px 24px rgba(242,101,34,0.55),0 2px 8px rgba(0,0,0,0.3)}
-    50%{box-shadow:0 4px 32px rgba(242,101,34,0.85),0 2px 8px rgba(0,0,0,0.3)}
-  }
-
-  /* Notification dot */
-  #retell-notif {
+  #ss-notif {
     position:absolute;top:2px;right:2px;
-    width:14px;height:14px;border-radius:50%;
-    background:#fff;border:2px solid var(--or);
+    width:18px;height:18px;border-radius:50%;
+    background:#fff;border:2.5px solid #F26522;
     display:flex;align-items:center;justify-content:center;
-    font-size:8px;font-weight:800;color:var(--or);
+    font-size:10px;font-weight:800;color:#F26522;font-family:'Inter',sans-serif;
   }
 
-  /* Chat window */
-  #retell-chat-window {
-    position:fixed;bottom:104px;right:28px;z-index:9998;
-    width:380px;height:560px;
-    background:#2e3233;
-    border:1px solid rgba(242,101,34,0.25);
-    border-radius:12px;
-    box-shadow:0 16px 64px rgba(0,0,0,0.5),0 0 0 1px rgba(242,101,34,0.1);
-    display:none;flex-direction:column;overflow:hidden;
-    animation:slide-up .25s cubic-bezier(.2,1,.3,1);
+  /* Popup teaser */
+  #ss-popup {
+    position:fixed;bottom:108px;right:28px;z-index:9998;
+    background:#fff;color:#1a1a1a;padding:14px 18px;
+    border-radius:12px 12px 4px 12px;
+    font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;max-width:240px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.18);
+    display:none;animation:ss-pop .3s cubic-bezier(.2,1,.3,1);
   }
-  #retell-chat-window.open { display:flex; }
-  @keyframes slide-up {
-    from{opacity:0;transform:translateY(16px)}
-    to{opacity:1;transform:translateY(0)}
+  #ss-popup::after {
+    content:'';position:absolute;bottom:-8px;right:22px;
+    border:8px solid transparent;border-top-color:#fff;border-bottom:none;
   }
-
-  /* Chat header */
-  #retell-chat-header {
-    background:var(--or);padding:16px 18px;
-    display:flex;align-items:center;justify-content:space-between;
-    flex-shrink:0;
-  }
-  .retell-header-left { display:flex;align-items:center;gap:12px; }
-  .retell-avatar {
-    width:38px;height:38px;border-radius:50%;
-    background:rgba(0,0,0,0.2);
-    display:flex;align-items:center;justify-content:center;
-    font-size:18px;flex-shrink:0;
-  }
-  .retell-header-name {
-    font-family:'Bebas Neue',sans-serif;font-size:18px;
-    letter-spacing:1.5px;color:#fff;line-height:1;
-  }
-  .retell-header-status {
-    font-size:11px;color:rgba(255,255,255,0.8);
-    display:flex;align-items:center;gap:5px;margin-top:2px;
-  }
-  .retell-status-dot {
-    width:7px;height:7px;border-radius:50%;background:#4ade80;
-    animation:blink 2s ease-in-out infinite;
-  }
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-  #retell-close-btn {
-    background:none;border:none;cursor:pointer;color:#fff;
-    opacity:0.8;padding:4px;transition:opacity .2s;
-    display:flex;align-items:center;
-  }
-  #retell-close-btn:hover{opacity:1}
-
-  /* Chat iframe container */
-  #retell-iframe-wrap {
-    flex:1;overflow:hidden;position:relative;
-  }
-  #retell-iframe-wrap iframe {
-    width:100%;height:100%;border:none;
-    background:transparent;
+  #ss-popup.show { display:block; }
+  @keyframes ss-pop {
+    from { opacity:0;transform:translateY(8px) }
+    to   { opacity:1;transform:translateY(0) }
   }
 
-  /* Mobile */
   @media(max-width:480px){
-    #retell-chat-window{
-      width:calc(100vw - 20px);
-      right:10px;bottom:96px;
-      height:70vh;max-height:520px;
-    }
-    #retell-chat-btn{bottom:20px;right:20px;width:58px;height:58px}
+    #ss-btn { bottom:18px;right:18px;width:60px;height:60px; }
+    #ss-popup { right:8px;bottom:96px;max-width:calc(100vw - 80px); }
   }
 </style>
 
-<!-- Chat bubble trigger button -->
-<button id="retell-chat-btn" aria-label="Chat with Skyline Striping">
-  <div id="retell-notif">1</div>
-  <!-- Chat icon -->
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<!-- Our branded FAB -->
+<button id="ss-btn" aria-label="Chat with Skyline Striping">
+  <div id="ss-notif">1</div>
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
+    stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
   </svg>
 </button>
 
-<!-- Chat window -->
-<div id="retell-chat-window" role="dialog" aria-label="Skyline Striping Chat">
-  <div id="retell-chat-header">
-    <div class="retell-header-left">
-      <div class="retell-avatar">🪧</div>
-      <div>
-        <div class="retell-header-name">SKYLINE STRIPING</div>
-        <div class="retell-header-status">
-          <span class="retell-status-dot"></span>
-          <span>Online — Ask us anything</span>
-        </div>
-      </div>
-    </div>
-    <button id="retell-close-btn" aria-label="Close chat">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <div id="retell-iframe-wrap">
-    <!-- Retell chat iframe loads on first open -->
-  </div>
+<!-- Popup teaser -->
+<div id="ss-popup">
+  Hi! 👋 Ask me about parking lot striping, ADA compliance, or get a <strong>free estimate</strong>.
 </div>
 
-<!-- Retell SDK -->
-<script>
-(function(){
+<!-- Official Retell widget — hidden FAB, we control open/close -->
+<script
   id="retell-widget"
   src="https://dashboard.retellai.com/retell-widget-v2.js"
   type="module"
-  data-public-key="public_key_ed06a95bff844acb978fb"  
-  data-agent-id="agent_b3fc299568658aa3a04a355491"  
-  data-agent-version="0"
+  data-public-key="public_key_ed06a95bff844acb978fb"
+  data-agent-id="agent_b3fc299568658aa3a04a355491"
   data-title="Skyline Striping Assistant"
+  data-color="#F26522"
+  data-theme-color="#3C4041"
+  data-component-color="#F26522"
+  data-show-ai-popup="false"
+  data-auto-open="false"
+></script>
 
-  var btn = document.getElementById('retell-chat-btn');
-  var win = document.getElementById('retell-chat-window');
-  var closeBtn = document.getElementById('retell-close-btn');
-  var iframeWrap = document.getElementById('retell-iframe-wrap');
-  var notif = document.getElementById('retell-notif');
-  var chatLoaded = false;
+<script>
+(function(){
+  var btn   = document.getElementById('ss-btn');
+  var popup = document.getElementById('ss-popup');
+  var notif = document.getElementById('ss-notif');
+  var open  = false;
 
-  function openChat() {
-    win.classList.add('open');
-    btn.setAttribute('aria-expanded','true');
-    // Hide notification dot once opened
-    if(notif) { notif.style.display='none'; }
-    // Load iframe on first open
-    if(!chatLoaded) {
-      chatLoaded = true;
-      var iframe = document.createElement('iframe');
-      iframe.src = 'https://chat.retellai.com/agent/' + AGENT_ID;
-      iframe.allow = 'microphone';
-      iframe.title = 'Skyline Striping Chat Assistant';
-      iframeWrap.appendChild(iframe);
-    }
-  }
-
-  function closeChat() {
-    win.classList.remove('open');
-    btn.setAttribute('aria-expanded','false');
-  }
+  /* Show teaser popup after 5s */
+  setTimeout(function(){
+    if(!open){ popup.classList.add('show'); }
+    setTimeout(function(){ popup.classList.remove('show'); }, 8000);
+  }, 5000);
 
   btn.addEventListener('click', function(){
-    win.classList.contains('open') ? closeChat() : openChat();
-  });
-  closeBtn.addEventListener('click', closeChat);
+    popup.classList.remove('show');
+    notif.style.display = 'none';
 
-  // Close on outside click
-  document.addEventListener('click', function(e){
-    if(win.classList.contains('open') && !win.contains(e.target) && !btn.contains(e.target)){
-      closeChat();
+    if(!open){
+      open = true;
+      /* Retell exposes a global toggle — try all known patterns */
+      if(window.RetellWebClient && window.RetellWebClient.toggle){
+        window.RetellWebClient.toggle();
+      } else if(window.retellWidget && window.retellWidget.toggle){
+        window.retellWidget.toggle();
+      } else if(window.retellWidget && window.retellWidget.open){
+        window.retellWidget.open();
+      } else {
+        /* Fallback: find and click Retell's actual button (now visible momentarily) */
+        var retellBtn = document.querySelector('[id*="retell"] button, retell-widget button, [class*="retell"] button');
+        if(retellBtn){
+          retellBtn.style.display = 'flex';
+          retellBtn.click();
+          retellBtn.style.display = 'none';
+        }
+      }
+    } else {
+      open = false;
+      if(window.retellWidget && window.retellWidget.close){ window.retellWidget.close(); }
+      else if(window.retellWidget && window.retellWidget.toggle){ window.retellWidget.toggle(); }
     }
-  });
-
-  // Close on Escape
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape') closeChat();
   });
 })();
 </script>
