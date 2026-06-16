@@ -965,9 +965,10 @@ footer{background:#2e3233;padding:60px 5% 28px;border-top:1px solid rgba(242,101
   retell-widget,
   [class*="retell-fab"],
   [class*="RetellFab"],
-  [id*="retell-fab"] {
-    display:none !important;
-    visibility:hidden !important;
+  [id*="retell-fab"],
+  [class*="retell"],
+  [id*="retell"]:not(#retell-widget):not(script) {
+    --retell-fab-display: none !important;
   }
 
   /* Our branded button */
@@ -1049,6 +1050,29 @@ footer{background:#2e3233;padding:60px 5% 28px;border-top:1px solid rgba(242,101
 
 <script>
 (function(){
+  /* Aggressively hide Retell's own FAB button whenever it appears */
+  function hideRetellFab(){
+    document.querySelectorAll('body > *:not(#ss-btn):not(#ss-popup):not(script):not(style):not(nav):not(section):not(div#about):not(div#services):not(div#why):not(div#reviews):not(div#gallery):not(div#faq):not(div#aeo):not(div#contact):not(footer):not(ul)').forEach(function(el){
+      if(el.id !== 'ss-btn' && el.id !== 'ss-popup'){
+        el.style.setProperty('display','none','important');
+      }
+    });
+    /* Also target by style: fixed position elements added by Retell */
+    document.querySelectorAll('body > div, body > button').forEach(function(el){
+      if(el.id === 'ss-btn' || el.id === 'ss-popup') return;
+      var st = window.getComputedStyle(el);
+      if(st.position === 'fixed' && el.id !== 'ss-btn'){
+        el.style.setProperty('display','none','important');
+      }
+    });
+  }
+  /* Run on DOM changes */
+  var obs = new MutationObserver(hideRetellFab);
+  obs.observe(document.body, {childList:true, subtree:false});
+  /* Run once after Retell loads */
+  setTimeout(hideRetellFab, 1000);
+  setTimeout(hideRetellFab, 2000);
+
   var btn   = document.getElementById('ss-btn');
   var popup = document.getElementById('ss-popup');
   var notif = document.getElementById('ss-notif');
