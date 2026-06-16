@@ -958,50 +958,38 @@ footer{background:#2e3233;padding:60px 5% 28px;border-top:1px solid rgba(242,101
 
 
 
+
 <!-- ══ RETELL AI CHAT WIDGET ══ -->
 <style>
-  /* Hide Retell's own FAB — we use ours */
-  #retell-widget-fab,
-  retell-widget,
+  /* ── Style Retell's own FAB to match our brand ── */
+  /* Retell injects a button at body level — we override its appearance */
+  body > button:not(#ss-btn-dummy),
+  [id*="retell-widget-fab"],
   [class*="retell-fab"],
-  [class*="RetellFab"],
-  [id*="retell-fab"],
-  [class*="retell"],
-  [id*="retell"]:not(#retell-widget):not(script) {
-    --retell-fab-display: none !important;
+  [class*="RetellFab"] {
+    background:#F26522 !important;
+    border-radius:50% !important;
+    width:68px !important;
+    height:68px !important;
+    bottom:28px !important;
+    right:28px !important;
+    box-shadow:0 4px 24px rgba(242,101,34,0.55),0 2px 8px rgba(0,0,0,0.35) !important;
+    animation:ss-pulse 3s ease-in-out infinite !important;
   }
-
-  /* Our branded button */
-  #ss-btn {
-    position:fixed;bottom:28px;right:28px;z-index:9999;
-    width:68px;height:68px;border-radius:50%;
-    background:#F26522;border:none;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 4px 24px rgba(242,101,34,0.55),0 2px 8px rgba(0,0,0,0.35);
-    transition:transform .2s;
-    animation:ss-pulse 3s ease-in-out infinite;
-  }
-  #ss-btn:hover { transform:scale(1.1); }
   @keyframes ss-pulse {
     0%,100% { box-shadow:0 4px 24px rgba(242,101,34,0.55),0 2px 8px rgba(0,0,0,0.35) }
-    50%      { box-shadow:0 4px 40px rgba(242,101,34,0.9),0 2px 8px rgba(0,0,0,0.35) }
-  }
-  #ss-notif {
-    position:absolute;top:2px;right:2px;
-    width:18px;height:18px;border-radius:50%;
-    background:#fff;border:2.5px solid #F26522;
-    display:flex;align-items:center;justify-content:center;
-    font-size:10px;font-weight:800;color:#F26522;font-family:'Inter',sans-serif;
+    50%      { box-shadow:0 4px 40px rgba(242,101,34,0.9), 0 2px 8px rgba(0,0,0,0.35) }
   }
 
   /* Popup teaser */
   #ss-popup {
-    position:fixed;bottom:108px;right:28px;z-index:9998;
+    position:fixed;bottom:110px;right:28px;z-index:99999;
     background:#fff;color:#1a1a1a;padding:14px 18px;
     border-radius:12px 12px 4px 12px;
     font-family:'Inter',sans-serif;font-size:14px;line-height:1.5;max-width:240px;
     box-shadow:0 8px 32px rgba(0,0,0,0.18);
     display:none;animation:ss-pop .3s cubic-bezier(.2,1,.3,1);
+    pointer-events:none;
   }
   #ss-popup::after {
     content:'';position:absolute;bottom:-8px;right:22px;
@@ -1012,28 +1000,17 @@ footer{background:#2e3233;padding:60px 5% 28px;border-top:1px solid rgba(242,101
     from { opacity:0;transform:translateY(8px) }
     to   { opacity:1;transform:translateY(0) }
   }
-
   @media(max-width:480px){
-    #ss-btn { bottom:18px;right:18px;width:60px;height:60px; }
     #ss-popup { right:8px;bottom:96px;max-width:calc(100vw - 80px); }
   }
 </style>
 
-<!-- Our branded FAB -->
-<button id="ss-btn" aria-label="Chat with Skyline Striping">
-  <div id="ss-notif">1</div>
-  <svg width="30" height="30" viewBox="0 0 24 24" fill="none"
-    stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-  </svg>
-</button>
-
-<!-- Popup teaser -->
+<!-- Popup teaser bubble -->
 <div id="ss-popup">
   Hi! 👋 Ask me about parking lot striping, ADA compliance, or get a <strong>free estimate</strong>.
 </div>
 
-<!-- Official Retell widget — hidden FAB, we control open/close -->
+<!-- Official Retell widget — handles everything including FAB and chat window -->
 <script
   id="retell-widget"
   src="https://dashboard.retellai.com/retell-widget-v2.js"
@@ -1044,74 +1021,22 @@ footer{background:#2e3233;padding:60px 5% 28px;border-top:1px solid rgba(242,101
   data-color="#F26522"
   data-theme-color="#3C4041"
   data-component-color="#F26522"
-  data-show-ai-popup="false"
+  data-fab-text="Chat with us"
+  data-bot-name="Skyline Assistant"
+  data-popup-message="Hi! Ask me about parking lot striping, ADA compliance, or get a free estimate 👋"
+  data-show-ai-popup="true"
+  data-show-ai-popup-time="5"
   data-auto-open="false"
 ></script>
 
 <script>
 (function(){
-  /* Aggressively hide Retell's own FAB button whenever it appears */
-  function hideRetellFab(){
-    document.querySelectorAll('body > *:not(#ss-btn):not(#ss-popup):not(script):not(style):not(nav):not(section):not(div#about):not(div#services):not(div#why):not(div#reviews):not(div#gallery):not(div#faq):not(div#aeo):not(div#contact):not(footer):not(ul)').forEach(function(el){
-      if(el.id !== 'ss-btn' && el.id !== 'ss-popup'){
-        el.style.setProperty('display','none','important');
-      }
-    });
-    /* Also target by style: fixed position elements added by Retell */
-    document.querySelectorAll('body > div, body > button').forEach(function(el){
-      if(el.id === 'ss-btn' || el.id === 'ss-popup') return;
-      var st = window.getComputedStyle(el);
-      if(st.position === 'fixed' && el.id !== 'ss-btn'){
-        el.style.setProperty('display','none','important');
-      }
-    });
-  }
-  /* Run on DOM changes */
-  var obs = new MutationObserver(hideRetellFab);
-  obs.observe(document.body, {childList:true, subtree:false});
-  /* Run once after Retell loads */
-  setTimeout(hideRetellFab, 1000);
-  setTimeout(hideRetellFab, 2000);
-
-  var btn   = document.getElementById('ss-btn');
   var popup = document.getElementById('ss-popup');
-  var notif = document.getElementById('ss-notif');
-  var open  = false;
-
-  /* Show teaser popup after 5s */
+  /* Show our custom popup teaser after 5s, then hide after 8s */
   setTimeout(function(){
-    if(!open){ popup.classList.add('show'); }
+    popup.classList.add('show');
     setTimeout(function(){ popup.classList.remove('show'); }, 8000);
   }, 5000);
-
-  btn.addEventListener('click', function(){
-    popup.classList.remove('show');
-    notif.style.display = 'none';
-
-    if(!open){
-      open = true;
-      /* Retell exposes a global toggle — try all known patterns */
-      if(window.RetellWebClient && window.RetellWebClient.toggle){
-        window.RetellWebClient.toggle();
-      } else if(window.retellWidget && window.retellWidget.toggle){
-        window.retellWidget.toggle();
-      } else if(window.retellWidget && window.retellWidget.open){
-        window.retellWidget.open();
-      } else {
-        /* Fallback: find and click Retell's actual button (now visible momentarily) */
-        var retellBtn = document.querySelector('[id*="retell"] button, retell-widget button, [class*="retell"] button');
-        if(retellBtn){
-          retellBtn.style.display = 'flex';
-          retellBtn.click();
-          retellBtn.style.display = 'none';
-        }
-      }
-    } else {
-      open = false;
-      if(window.retellWidget && window.retellWidget.close){ window.retellWidget.close(); }
-      else if(window.retellWidget && window.retellWidget.toggle){ window.retellWidget.toggle(); }
-    }
-  });
 })();
 </script>
 <!-- ══ END RETELL WIDGET ══ -->
