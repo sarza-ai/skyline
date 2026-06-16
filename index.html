@@ -4,6 +4,18 @@ cat > /mnt/user-data/outputs/skylinestriping.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+  <script
+  id="retell-widget"
+  src="https://dashboard.retellai.com/retell-widget-v2.js"
+  type="module"
+  data-public-key="YOUR_RETELL_PUBLIC_KEY"
+  data-agent-id="YOUR_CHAT_AGENT_ID"
+  data-voice-agent-id="YOUR_VOICE_AGENT_ID"  <!-- optional for voice -->
+  data-title="Skyline Striping Assistant"
+  data-logo-url="https://skylinestriping.com/logo.png"
+></script>
+  
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Skyline Striping | Long Island's #1 Parking Lot Striping & Pavement Marking Company</title>
@@ -1058,5 +1070,4 @@ footer{background:#090A0B;padding:64px 6% 32px;border-top:1px solid rgba(247,196
 HTMLEOF
 echo "Done — $(wc -c < /mnt/user-data/outputs/skylinestriping.html) bytes"
 
-Claude Fable 5 is currently unavailable.
 Learn more(opens in new tab)
